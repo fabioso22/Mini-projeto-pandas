@@ -1,0 +1,49 @@
+import pandas as pd
+
+funcionarios_df = pd.read_csv(r'C:\Users\Fábio\Documents\Projeto Python\CadastroFuncionarios.csv', sep=';',decimal=',')
+clientes_df = pd.read_csv(r'C:\Users\Fábio\Documents\Projeto Python\CadastroClientes.csv', sep=';',decimal=',')
+servicos_df = pd.read_csv(r'C:\Users\Fábio\Documents\Projeto Python\BaseServiçosPrestados.csv')
+
+funcionarios_df = funcionarios_df.drop(['Estado Civil', 'Cargo'], axis=1)
+
+display(funcionarios_df)
+display(clientes_df)
+display(servicos_df)
+
+# Calcular a folha salarial.
+funcionarios_df['Salario Total'] = funcionarios_df.loc[:,'Salario Base':'VR'].sum(axis=1)
+display(funcionarios_df.head())
+print('R${:,}'.format(funcionarios_df['Salario Total'].sum()))
+
+# Calcular o faturamento total.
+
+faturamentos_df = servicos_df[['ID Cliente','Tempo Total de Contrato (Meses)']].merge(clientes_df[['ID Cliente','Valor Contrato Mensal']], on='ID Cliente')
+faturamentos_df['Faturamento Total'] = faturamentos_df['Tempo Total de Contrato (Meses)'] * faturamentos_df['Valor Contrato Mensal']
+display(faturamentos_df.head())
+print('Faturalmento total: R${:,}'.format(faturamentos_df['Faturamento Total'].sum()))
+
+# Calcular a % da Quantidade de funcionários que fecharam contrato.
+
+qtde_fun_fecharamcontrato = len(servicos_df['ID Funcionário'].unique())
+qtde_total_fun = len(funcionarios_df['ID Funcionário'])
+print(' Percentual de funcionários que fecharam contrato: {:.2%}'.format(qtde_fun_fecharamcontrato / qtde_total_fun))
+
+# Calcular a Quantidade de Contratos por Área.
+
+contratos_area_df = servicos_df[['ID Funcionário']].merge(funcionarios_df[['ID Funcionário', 'Area']], on='ID Funcionário')
+qtde_contratos_area = contratos_area_df['Area'].value_counts()
+print(qtde_contratos_area)
+qtde_contratos_area.plot(kind='bar')
+
+# Calcular a Quantidade de Funcionários por Área.
+
+funcionarios_area = funcionarios_df['Area'].value_counts()
+print(funcionarios_area)
+funcionarios_area.plot(kind='bar')
+
+# Calcular o ticket medio mensal.
+
+ticket_medio = clientes_df['Valor Contrato Mensal'].mean()
+print('Ticket medio mensal: R${:,.2f}'.format(ticket_medio))
+
+
