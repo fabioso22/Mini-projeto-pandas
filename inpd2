@@ -1,0 +1,27 @@
+import pandas as pd
+import plotly.express as px
+
+tabela = pd.read_csv(r'C:\Users\Fábio\Documents\Projeto Python\ClientesBanco.csv', encoding="latin1")
+tabela = tabela.drop('CLIENTNUM', axis=1)
+display(tabela)
+
+# Dropando tabela vazia
+
+tabela = tabela.dropna()
+display(tabela.info())
+display(tabela.describe().round(1))
+
+# Contando categorias
+
+categoria = tabela["Categoria"].value_counts()
+categoria_perc = tabela["Categoria"].value_counts(normalize=True)
+display(categoria)
+display(categoria_perc)
+
+# Fazendo o plot de tabelas
+
+for coluna in tabela:
+    grafico = px.histogram(tabela, x=coluna, color='Categoria')
+    grafico.show()
+    
+    
